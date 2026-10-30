@@ -2,12 +2,12 @@
 Categories:
   - Games
 License: GPL-3.0-or-later
-SourceCode: https://example.org/open-roulette
-IssueTracker: https://example.org/open-roulette/issues
+SourceCode: https://github.com/jirdevv/open-roulette
+IssueTracker: https://github.com/jirdevv/open-roulette/issues
 AutoName: Open Roulette
 
 RepoType: git
-Repo: https://example.org/open-roulette.git
+Repo: https://github.com/jirdevv/open-roulette.git
 
 Builds:
   - versionName: 1.0.0
