@@ -1,0 +1,23 @@
+# Draft for fdroiddata. Replace the URLs with your real repository.
+Categories:
+  - Games
+License: GPL-3.0-or-later
+SourceCode: https://example.org/open-roulette
+IssueTracker: https://example.org/open-roulette/issues
+AutoName: Open Roulette
+
+RepoType: git
+Repo: https://example.org/open-roulette.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

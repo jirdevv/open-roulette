@@ -1,0 +1,21 @@
+Open Roulette is a free, offline roulette simulator with play money only.
+
+<b>Tables</b>
+• European (single zero), American (double zero) and French (La Partage / En Prison)
+• Complete betting layout: straight, split, street, corner, six line, trio, basket, columns, dozens, red/black, odd/even, high/low
+• French call bets: Voisins du Zéro, Tiers du Cylindre, Orphelins, Jeu Zéro
+
+<b>Gameplay</b>
+• Realistic wheel and ball animation, cryptographically secure random numbers
+• Chip denominations you can customise, undo, clear, rebet and auto-spin
+• History, hot/cold numbers and statistics
+
+<b>Design</b>
+• Material 3, light / dark / AMOLED themes, four table felts, three chip designs
+• Landscape and portrait, TalkBack support, scalable text
+
+<b>Privacy</b>
+• No permissions, no network, no ads, no tracking, no Google services
+• 100% free software (GPL-3.0-or-later)
+
+This app does not offer real-money gambling.
