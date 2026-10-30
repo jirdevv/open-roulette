@@ -1,0 +1,92 @@
+
+name: Android Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and sign release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android build tools
+        run: sdkmanager "build-tools;35.0.0"
+
+      - name: Build release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon clean test lint :app:assembleRelease
+
+      - name: Sign release APK
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          KEYSTORE_PATH="$RUNNER_TEMP/open-roulette-release.jks"
+          UNSIGNED_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          ALIGNED_APK="$RUNNER_TEMP/open-roulette-aligned.apk"
+          SIGNED_APK="$RUNNER_TEMP/open-roulette-${GITHUB_REF_NAME}.apk"
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+
+          test -n "$KEYSTORE_B64"
+          test -n "$KEYSTORE_PASSWORD"
+          test -n "$KEY_ALIAS"
+          test -n "$KEY_PASSWORD"
+          test -f "$UNSIGNED_APK"
+
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$KEYSTORE_PATH"
+
+          "$BUILD_TOOLS/zipalign" -f -p 4 \
+            "$UNSIGNED_APK" "$ALIGNED_APK"
+
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks "$KEYSTORE_PATH" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            --out "$SIGNED_APK" \
+            "$ALIGNED_APK"
+
+          "$BUILD_TOOLS/apksigner" verify \
+            --verbose --print-certs "$SIGNED_APK"
+
+          echo "SIGNED_APK=$SIGNED_APK" >> "$GITHUB_ENV"
+
+          rm -f "$KEYSTORE_PATH"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_REF_NAME" == *"-test"* ]]; then
+            gh release create "$GITHUB_REF_NAME" "$SIGNED_APK" \
+              --title "Open Roulette $GITHUB_REF_NAME" \
+              --generate-notes \
+              --prerelease
+          else
+            gh release create "$GITHUB_REF_NAME" "$SIGNED_APK" \
+              --title "Open Roulette $GITHUB_REF_NAME" \
+              --generate-notes
+          fi
