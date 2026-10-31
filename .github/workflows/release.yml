@@ -37,20 +37,9 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Generate Linux dependency verification metadata
+      - name: Build release APK
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --write-verification-metadata sha256 clean test :app:assembleRelease
-
-      - name: Upload Linux verification metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-verification-metadata
-          path: gradle/verification-metadata.xml
-          if-no-files-found: error
-
-      - name: Verify dependencies and build release APK
-        run: |
           ./gradlew --no-daemon clean test :app:assembleRelease
 
       - name: Sign release APK
